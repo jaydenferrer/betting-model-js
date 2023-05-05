@@ -27,22 +27,14 @@ async function getWebsite() {
         // async operation, get response from the url
         const response = await axios.get(url)
         // print out the response
-        //console.log(response.data);
         // extract the HTML script from the website
         const websiteHTML = response.data;
-        
-        // using cheerio (a library to parse an HTML string into a DOM object)
-        // first load the HTML from response 
-        // this is our dom object
-        //const $ = cheerio.load(websiteHTML);
 
         // parse html and make into dom object
         const dom = new JSDOM(websiteHTML, { virtualConsole });
-        // extract/select all dom objects with the data-click-id "user"
         // DOM object for each row in top scorers table (i.e this )
         const topScorerTableRow = dom.window.document.querySelectorAll('.top-score-table .Table .Table__TBODY tr');
 
-        // loop through each element of topscrorer table row 
         // loop through each table row
         for (row in topScorerTableRow) {
             const playerData = {
@@ -55,27 +47,19 @@ async function getWebsite() {
             // create playerData object to store data
             // loop through each table row's children (spans or links) that are associated with the table row
             for (element in topScorerTableRow[row].children) {
-                //console.log(element);
-                    // print out all the text content stored in these children
-                    // store text content that we are extracting from current child
+
                     const dataElement = topScorerTableRow[row].children[element].textContent;
-                    //console.log(dataElement);
-                    //console.log(dataElement);
                     if (element == 1) playerData.playerName = dataElement;
                     else if (element == 2) playerData.playerTeam = dataElement;
                     else if (element == 3) playerData.gamesPlayed = dataElement;
                     else if (element == 4) playerData.goalsScored = dataElement;
-                    //console.log(element);
-                    //console.log(topScorerTableRow[row].children[element].textContent);
-                    //console.log(playerData);
+
             }
             // if the playerData object is not null, then push it into the playerDataArray
             if (!checkProperties(playerData)) {
                 playerDataArray.push(playerData);
             }
-            //console.log(playerData);
         }
-        //console.log(playerDataArray);
         return playerDataArray;
     }
     // pass the error object
@@ -84,8 +68,16 @@ async function getWebsite() {
     }
 }
 
-const hi = getWebsite();
-console.log(hi);
-//const websiteHTML = website.data;
-//console.log('hi' + websiteData);
+// getWebsite returns a promise, so attach a then and catch to resolve the promise 
+getWebsite()
+.then( (data) => {
+    poop = data;
+    // here we can probably do stuff with the data 
+    // maybe calculate averages, or whatever!
+    //console.log(data);
+})
+.catch((error) => {
+    console.log("something went wrong when trying to scrape the website!")
+})
+
 
